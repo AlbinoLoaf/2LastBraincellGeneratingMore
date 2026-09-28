@@ -1,0 +1,76 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "src-rp"
+version = "0.1.0"
+description = "Generative data privacy and utility balancing"
+readme = "README.md"
+requires-python = ">=3.11,<3.12"
+license = { file = "LICENSE" }
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = [
+    "dataset",
+    "dataset.*",
+    "diffusion",
+    "diffusion.*",
+    "models",
+    "models.*",
+    "preprocessing",
+    "preprocessing.*",
+    "utils",
+    "utils.*",
+]
+
+[tool.black]
+line-length = 88
+target-version = ["py311"]
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[tool.flake8]
+max-line-length = 88
+extend-ignore = ["E203", "W503"]
+exclude = [
+    ".git",
+    ".venv",
+    "build",
+    "dist",
+    "__pycache__"
+]
+
+[tool.pylint.main]
+py-version = "3.11"
+ignore = [
+    ".git",
+    ".venv",
+    "build",
+    "dist",
+    "__pycache__"
+]
+
+[tool.pylint.format]
+max-line-length = 88
+
+[tool.mypy]
+python_version = "3.11"
+ignore_missing_imports = true
+check_untyped_defs = true
+warn_unused_ignores = true
+exclude = [
+    "build/",
+    "dist/"
+]

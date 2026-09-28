@@ -4,7 +4,6 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 import numpy as np
 import torch
-from diff_evaluator import Evaluator
 from torch.nn import CrossEntropyLoss
 from timeit import default_timer as timer
 import matplotlib.pyplot as plt
@@ -12,12 +11,13 @@ from sklearn.manifold import TSNE
 import matplotlib as mpl
 import umap
 from sklearn.decomposition import PCA
-from utils.util import VLBLoss, draw
-from diffusion import create_diffusion
 from collections import OrderedDict
 from copy import deepcopy
 import lmdb
 import pickle
+from diff_evaluator import Evaluator
+from utils.util import VLBLoss, draw
+from diffusion import create_diffusion
 
 class Trainer(object):
     def __init__(self, params, data_loader, model):
