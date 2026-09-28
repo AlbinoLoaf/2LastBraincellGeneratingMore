@@ -7,10 +7,9 @@ import numpy as np
 import math
 from timeit import default_timer as timer
 import random
-from scripts.diff_trainer import Trainer
 
+from diff_trainer import Trainer
 from dataset.datasets import LoadDataset
-
 from models.eegdiffuser import EEGDiffuser
 
 
