@@ -1,0 +1,14 @@
+seed: 8888
+cuda: 0
+epochs: 1000
+batch_size: 32
+num_of_classes: 9
+lr: 0.0001
+weight_decay: 0.05
+optimizer: "AdamW"
+model_dir: "./models_weights/DiTFaced"
+datasets_dir: "./datasets/real_data_lmdb"
+synthetic_datasets: "./datasets/synthetic_data"
+synthetic_data_dir: "./datasets/synthetic_data"
+synthetic_ratio: 1
+cfg_scale: 4.0

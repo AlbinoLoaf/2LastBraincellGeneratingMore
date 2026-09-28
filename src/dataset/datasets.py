@@ -82,10 +82,6 @@ class LoadDataset(object):
         train_set = CustomDataset(self.datasets_dir, mode='train')
         val_set = CustomDataset(self.datasets_dir, mode='val')
         test_set = CustomDataset(self.datasets_dir, mode='test')
-        syn_set = SynthesisDataset(self.params.synthetic_datasets)
-        print(len(train_set), len(val_set), len(test_set))
-        print(len(train_set)+len(val_set)+len(test_set))
-        print(len(syn_set))
 
         data_loader = {
             'train': DataLoader(
@@ -106,18 +102,5 @@ class LoadDataset(object):
                 collate_fn=test_set.collate,
                 shuffle=False,
             ),
-            'syn': DataLoader(
-                syn_set,
-                batch_size=self.params.batch_size,
-                collate_fn=syn_set.collate,
-                shuffle=True,
-            ),
-            # 'train_with_sys': DataLoader(
-            #     ConcatDataset([train_set, syn_set]),
-            #     # syn_set,
-            #     batch_size=self.params.batch_size,
-            #     collate_fn=custom_collate_fn,
-            #     shuffle=True,
-            # )
         }
         return data_loader
