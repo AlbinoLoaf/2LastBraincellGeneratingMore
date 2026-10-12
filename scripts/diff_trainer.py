@@ -234,4 +234,5 @@ if __name__ == '__main__':
     model = EEGDiffuser(num_classes=args.num_of_classes)
 
     trainer = Trainer(params=args, data_loader=data_loader, model=model)
-    trainer.train()
+    #trainer.train()
+    trainer.synthetic_data()
