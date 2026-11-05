@@ -1,0 +1,17 @@
+{
+    "epoch36_valacc0.1176.pth": {
+        "balanced_accuracy": 0.10856146001073537,
+        "cohen_kappa": -0.0029312101116354405,
+        "weighted_f1": 0.06691064288298382
+    },
+    "best_model.pth": {
+        "balanced_accuracy": 0.10856146001073537,
+        "cohen_kappa": -0.002713282657774263,
+        "weighted_f1": 0.0622666507885695
+    },
+    "epoch41_valacc0.1258.pth": {
+        "balanced_accuracy": 0.10856146001073537,
+        "cohen_kappa": -0.002713282657774263,
+        "weighted_f1": 0.0622666507885695
+    }
+}

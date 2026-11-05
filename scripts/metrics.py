@@ -2,7 +2,7 @@ import pathlib as p
 import torch
 from torch.utils.data import DataLoader
 
-import src.utils.metrics as metrics
+import utils.metrics_utils as metrics_utils
 from dataset.datasets import CustomDataset
 from models.cbramod import CBraMod
 
@@ -23,7 +23,7 @@ def main():
     dataset_dir = "./datasets/real_data_lmdb"
     test_dataset = CustomDataset(dataset_dir, mode='test')
     dataloader = DataLoader(test_dataset, batch_size=32, shuffle=False)
-    metrics.evaluate_and_save_all(
+    metrics_utils.evaluate_and_save_all(
         model_dir=model_dir,
         dataloader=dataloader,
         model_class=CBraMod,

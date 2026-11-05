@@ -59,7 +59,7 @@ def get_preds_and_labels(model, dataloader, device):
             
     return np.array(all_labels), np.array(all_preds)
 
-def load_all_models(folder_path, model_class, device, **arch_params):
+def load_all_models(folder_path, model_class, device, arch_params):
     """Dynamically loads all .pth checkpoints from a given directory using os.listdir.
 
     Parameters
