@@ -3,7 +3,7 @@ import json
 import torch
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.metrics import balanced_accuracy_score, f1_score, confusion_matrix, cohen_kappa_score, ConfusionMatrixDisplay
+from sklearn.metrics import balanced_accuracy_score, f1_score,pairwise_distances, confusion_matrix, cohen_kappa_score, ConfusionMatrixDisplay
 # Functions for evaluating the performance of the fine-tuned models.
 # The metrics consist of Balanced Accuracy, Cohen's Kappa, Weighted F1, Nearest Neighbour,
 # and Differential Privacy.
