@@ -26,12 +26,14 @@ class ConfigArgs:
 
 
 class Trainer(object):
-    def __init__(self, params, data_loader, model):
+    def __init__(self, params, data_loader, model, diffusion=None):
         self.params = params
         self.data_loader = data_loader
         self.device = torch.device(
             f"cuda:{self.params.cuda}" if torch.cuda.is_available() else "cpu"
-        )
+            )
+        self.model = model.to(self.device)
+        self.diffusion = diffusion or create_diffusion(params.diffusion_mode, params.timesteps)
 
         self.model = model.to(self.device)
         self.criterion = VLBLoss().to(self.device)

@@ -16,7 +16,13 @@ class CustomDataset(Dataset):
         super(CustomDataset, self).__init__()
         self.db = lmdb.open(data_dir, readonly=True, lock=False, readahead=True, meminit=False)
         with self.db.begin(write=False) as txn:
-            self.keys = pickle.loads(txn.get('__keys__'.encode()))[mode]
+            raw_keys = pickle.loads(txn.get('__keys__'.encode()))
+            if isinstance(raw_keys, dict):
+                self.keys = raw_keys[mode]
+            else:
+                # If it's a list, just use the list
+                self.keys = raw_keys
+           # self.keys = pickle.loads(txn.get('__keys__'.encode()))[mode]
         # if mode=='train':
         #     length = len(self.keys)
         #     self.keys = self.keys[:int(length * 0.3)]
@@ -31,7 +37,10 @@ class CustomDataset(Dataset):
         data = pair['sample']
         label = pair['label']
         data = data.reshape(32, 2000)
-        return data/100, label
+        if np.abs(data).max() > 10.0:
+            data = data / 100.0
+            
+        return data, label
 
     def collate(self, batch):
         x_data = np.array([x[0] for x in batch])

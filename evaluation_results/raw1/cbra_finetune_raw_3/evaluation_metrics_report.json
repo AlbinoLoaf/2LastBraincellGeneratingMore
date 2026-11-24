@@ -1,0 +1,92 @@
+{
+    "epoch1_valacc0.1210.pth": {
+        "balanced_accuracy": 0.11164787976382179,
+        "cohen_kappa": 0.0005590177850471889,
+        "weighted_f1": 0.033257681564245814
+    },
+    "best_model.pth": {
+        "balanced_accuracy": 0.2961621041331186,
+        "cohen_kappa": 0.20609542842867845,
+        "weighted_f1": 0.29290557487271174
+    },
+    "epoch2_valacc0.1451.pth": {
+        "balanced_accuracy": 0.1383521202361782,
+        "cohen_kappa": 0.03173263566545703,
+        "weighted_f1": 0.09707118986445984
+    },
+    "epoch4_valacc0.1472.pth": {
+        "balanced_accuracy": 0.1316425120772947,
+        "cohen_kappa": 0.023811555859008182,
+        "weighted_f1": 0.0979356172907854
+    },
+    "epoch5_valacc0.1654.pth": {
+        "balanced_accuracy": 0.15861513687600642,
+        "cohen_kappa": 0.05405405405405406,
+        "weighted_f1": 0.1235594497097288
+    },
+    "epoch6_valacc0.2000.pth": {
+        "balanced_accuracy": 0.20772946859903382,
+        "cohen_kappa": 0.10645114314839077,
+        "weighted_f1": 0.19522018201431818
+    },
+    "epoch7_valacc0.2042.pth": {
+        "balanced_accuracy": 0.1932367149758454,
+        "cohen_kappa": 0.09044660356115264,
+        "weighted_f1": 0.17593215295921616
+    },
+    "epoch8_valacc0.2407.pth": {
+        "balanced_accuracy": 0.22530864197530864,
+        "cohen_kappa": 0.12480009969054384,
+        "weighted_f1": 0.21121408804995906
+    },
+    "epoch10_valacc0.2495.pth": {
+        "balanced_accuracy": 0.2297369833601718,
+        "cohen_kappa": 0.1352346676152414,
+        "weighted_f1": 0.22274937638861905
+    },
+    "epoch11_valacc0.2517.pth": {
+        "balanced_accuracy": 0.23738593666129898,
+        "cohen_kappa": 0.14030224075039088,
+        "weighted_f1": 0.22707976531795318
+    },
+    "epoch12_valacc0.2875.pth": {
+        "balanced_accuracy": 0.25831991411701555,
+        "cohen_kappa": 0.16259722973254032,
+        "weighted_f1": 0.2495666540564775
+    },
+    "epoch13_valacc0.2960.pth": {
+        "balanced_accuracy": 0.26892109500805156,
+        "cohen_kappa": 0.1746902802028768,
+        "weighted_f1": 0.25723288518639137
+    },
+    "epoch16_valacc0.2978.pth": {
+        "balanced_accuracy": 0.26663982823403115,
+        "cohen_kappa": 0.1718145915610061,
+        "weighted_f1": 0.25316776676311303
+    },
+    "epoch17_valacc0.3225.pth": {
+        "balanced_accuracy": 0.2758990874932904,
+        "cohen_kappa": 0.18453397775092706,
+        "weighted_f1": 0.26467303859061647
+    },
+    "epoch21_valacc0.3392.pth": {
+        "balanced_accuracy": 0.3036768652710682,
+        "cohen_kappa": 0.21178377030789042,
+        "weighted_f1": 0.29383438683129154
+    },
+    "epoch29_valacc0.3400.pth": {
+        "balanced_accuracy": 0.3036768652710682,
+        "cohen_kappa": 0.21449547016557335,
+        "weighted_f1": 0.2987911772445152
+    },
+    "epoch30_valacc0.3452.pth": {
+        "balanced_accuracy": 0.3048845947396672,
+        "cohen_kappa": 0.21565036420395434,
+        "weighted_f1": 0.2988573937940624
+    },
+    "epoch38_valacc0.3488.pth": {
+        "balanced_accuracy": 0.2961621041331186,
+        "cohen_kappa": 0.20609542842867845,
+        "weighted_f1": 0.29290557487271174
+    }
+}

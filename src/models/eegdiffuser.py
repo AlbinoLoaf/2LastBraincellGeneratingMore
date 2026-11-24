@@ -80,6 +80,7 @@ class LabelEmbedder(nn.Module):
         """
         Drops labels to enable classifier-free guidance.
         """
+        # unchanged
         if force_drop_ids is None:
             drop_ids = torch.rand(labels.shape[0], device=labels.device) < self.dropout_prob
         else:
@@ -162,13 +163,13 @@ class EEGDiffuser(nn.Module):
         learn_sigma=True,
     ):
         super().__init__()
-        self.learn_sigma = learn_sigma
         self.in_channels = in_channels
-        self.out_channels = in_channels * 2 if learn_sigma else in_channels
-        self.num_heads = num_heads
-        self.patch_size = patch_size
         self.time_points = time_points
+        self.patch_size = patch_size
+        self.learn_sigma = learn_sigma
+        self.out_channels = in_channels * 2 if learn_sigma else in_channels
         self.sequence_len = time_points // patch_size
+        self.num_heads = num_heads
 
         self.x_embedder = PatchEmbed(
             time_points = time_points,

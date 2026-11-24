@@ -1,0 +1,117 @@
+{
+    "epoch1_valacc0.1327.pth": {
+        "balanced_accuracy": 0.13043478260869568,
+        "cohen_kappa": 0.02086956521739114,
+        "weighted_f1": 0.06259942608351349
+    },
+    "best_model.pth": {
+        "balanced_accuracy": 0.28019323671497587,
+        "cohen_kappa": 0.18805945293309467,
+        "weighted_f1": 0.27193335004113045
+    },
+    "epoch2_valacc0.1426.pth": {
+        "balanced_accuracy": 0.1367418142780462,
+        "cohen_kappa": 0.02956167176350666,
+        "weighted_f1": 0.09426725197592843
+    },
+    "epoch3_valacc0.1503.pth": {
+        "balanced_accuracy": 0.1469404186795491,
+        "cohen_kappa": 0.040006657374082044,
+        "weighted_f1": 0.1137956602973606
+    },
+    "epoch5_valacc0.1525.pth": {
+        "balanced_accuracy": 0.15942028985507248,
+        "cohen_kappa": 0.055648256299015486,
+        "weighted_f1": 0.1416451673744227
+    },
+    "epoch6_valacc0.1582.pth": {
+        "balanced_accuracy": 0.16425120772946858,
+        "cohen_kappa": 0.05967976710334799,
+        "weighted_f1": 0.15263776403638823
+    },
+    "epoch7_valacc0.1762.pth": {
+        "balanced_accuracy": 0.16358024691358022,
+        "cohen_kappa": 0.05895155383488526,
+        "weighted_f1": 0.15917850390244312
+    },
+    "epoch9_valacc0.1937.pth": {
+        "balanced_accuracy": 0.1873322597960279,
+        "cohen_kappa": 0.08480359520639136,
+        "weighted_f1": 0.16634555109266655
+    },
+    "epoch10_valacc0.2133.pth": {
+        "balanced_accuracy": 0.189747718733226,
+        "cohen_kappa": 0.08803329864724252,
+        "weighted_f1": 0.18689169162749483
+    },
+    "epoch11_valacc0.2142.pth": {
+        "balanced_accuracy": 0.19028448738593667,
+        "cohen_kappa": 0.0870512102544958,
+        "weighted_f1": 0.1638524837374945
+    },
+    "epoch13_valacc0.2177.pth": {
+        "balanced_accuracy": 0.20598497047772407,
+        "cohen_kappa": 0.10534401860233356,
+        "weighted_f1": 0.18536638299076638
+    },
+    "epoch15_valacc0.2431.pth": {
+        "balanced_accuracy": 0.21765968867418142,
+        "cohen_kappa": 0.11989327997332011,
+        "weighted_f1": 0.20692011433080612
+    },
+    "epoch19_valacc0.2497.pth": {
+        "balanced_accuracy": 0.22342995169082128,
+        "cohen_kappa": 0.12618329345677726,
+        "weighted_f1": 0.21863149386491013
+    },
+    "epoch22_valacc0.2668.pth": {
+        "balanced_accuracy": 0.24127750939345147,
+        "cohen_kappa": 0.14726449161917887,
+        "weighted_f1": 0.24061139391276073
+    },
+    "epoch23_valacc0.2670.pth": {
+        "balanced_accuracy": 0.2533548040794418,
+        "cohen_kappa": 0.15736567737647733,
+        "weighted_f1": 0.23577165092913197
+    },
+    "epoch26_valacc0.2804.pth": {
+        "balanced_accuracy": 0.26382179280730006,
+        "cohen_kappa": 0.1695680206318505,
+        "weighted_f1": 0.25854847055048036
+    },
+    "epoch27_valacc0.2815.pth": {
+        "balanced_accuracy": 0.25442834138486314,
+        "cohen_kappa": 0.1599359174416911,
+        "weighted_f1": 0.24941498583980984
+    },
+    "epoch28_valacc0.2895.pth": {
+        "balanced_accuracy": 0.27522812667740204,
+        "cohen_kappa": 0.18248175182481763,
+        "weighted_f1": 0.2665264185137379
+    },
+    "epoch29_valacc0.2898.pth": {
+        "balanced_accuracy": 0.275228126677402,
+        "cohen_kappa": 0.18158950585202593,
+        "weighted_f1": 0.26916808879194365
+    },
+    "epoch30_valacc0.2995.pth": {
+        "balanced_accuracy": 0.264224369296833,
+        "cohen_kappa": 0.17071236250547905,
+        "weighted_f1": 0.26004476357995293
+    },
+    "epoch37_valacc0.3032.pth": {
+        "balanced_accuracy": 0.27522812667740204,
+        "cohen_kappa": 0.18312440131606356,
+        "weighted_f1": 0.268564048437281
+    },
+    "epoch41_valacc0.3083.pth": {
+        "balanced_accuracy": 0.2848899624261943,
+        "cohen_kappa": 0.19322132700435124,
+        "weighted_f1": 0.2808773349050949
+    },
+    "epoch43_valacc0.3085.pth": {
+        "balanced_accuracy": 0.28019323671497587,
+        "cohen_kappa": 0.18805945293309467,
+        "weighted_f1": 0.27193335004113045
+    }
+}

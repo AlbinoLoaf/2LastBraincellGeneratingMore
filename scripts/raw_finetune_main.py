@@ -52,10 +52,10 @@ def main():
     mixed_train_dataset = ConcatDataset([real_train_dataset, syn_train_dataset])
     
     # Train exclusively on real data
+    train_loader = DataLoader(mixed_train_dataset, batch_size=params.batch_size, shuffle=True, num_workers=2)
     val_dataset = CustomDataset(params.datasets_dir, mode='val')
     test_dataset = CustomDataset(params.datasets_dir, mode='test')
     
-    train_loader = DataLoader(mixed_train_dataset, batch_size=params.batch_size, shuffle=True, num_workers=2)
     val_loader = DataLoader(val_dataset, batch_size=params.batch_size, shuffle=False)
     test_loader = DataLoader(test_dataset, batch_size=params.batch_size, shuffle=False)
 

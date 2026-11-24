@@ -23,7 +23,7 @@ class Trainer(object):
 
         self.train_loader = data_loaders['train']
         self.val_loader = data_loaders['val']
-        self.test_loader = data_loaders['   test']
+        self.test_loader = data_loaders['test']
         
         self.model = model.to(self.device)
         self.data_length = len(self.train_loader)

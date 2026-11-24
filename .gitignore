@@ -4,6 +4,8 @@ __pycache__/
 *$py.class
 datasets.zip
 /datasets
+/models_weights
+/evaluation_results/*/*/*.png
 # C extensions
 *.so
 

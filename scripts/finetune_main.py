@@ -23,8 +23,7 @@ def setup_seed(seed):
 
 def main():
     parser = argparse.ArgumentParser(description='CBraMod Fine-Tuning')
-    parser.add_argument('--config', type=str,required=True)
-    
+    parser.add_argument('--config', type=str, required=True, help="Path to the config.yaml file")
     cmd_args = parser.parse_args()
 
     with open(cmd_args.config, 'r') as file:
@@ -58,12 +57,14 @@ def main():
         print("Loading strictly Real data...")
         active_train_dataset = real_train_dataset
 
+    val_dataset = CustomDataset(params.datasets_dir, mode='val')
+    test_dataset = CustomDataset(params.datasets_dir, mode='test')
+
     train_loader = DataLoader(active_train_dataset, batch_size=params.batch_size, shuffle=True, num_workers=2)
     val_loader = DataLoader(val_dataset, batch_size=params.batch_size, shuffle=False)
     test_loader = DataLoader(test_dataset, batch_size=params.batch_size, shuffle=False)
 
-    val_dataset = CustomDataset(params.datasets_dir, mode='val')
-    test_dataset = CustomDataset(params.datasets_dir, mode='test')
+
     data_loaders = {'train': train_loader, 'val': val_loader, 'test': test_loader}
 
     model = CBraMod(
@@ -95,3 +96,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
