@@ -1,0 +1,23 @@
+dataset: "FACED"
+in_channels: 32
+time_points: 2000
+num_of_classes: 9
+
+seed: 8888
+arch_mode: "paper"
+diffusion_mode: "ve_sde"
+timesteps: 1000
+cfg_scale: 4.0
+
+epochs: 5000
+batch_size: 64
+optimizer: "AdamW"
+lr: 0.0005
+weight_decay: 0.05
+min_lr: 0.000001
+grad_clip: 1.0
+
+cuda: 0
+datasets_dir: "./datasets/real_data_lmdb"
+model_dir: "./models_weights/diff_paper_ve_sde"
+synthetic_data_dir: "./datasets/synth_paper_ve_sde"

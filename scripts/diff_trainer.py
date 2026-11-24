@@ -53,50 +53,57 @@ class Trainer(object):
         )
         print(self.model)
 
-        self.diffusion = create_diffusion(timestep_respacing="")  # default: 1000 steps, linear noise schedule
+#        self.diffusion = create_diffusion(timestep_respacing="")  # default: 1000 steps, linear noise schedule
+        diffusion_mode = getattr(self.params, "diffusion_mode")
+        timesteps = getattr(self.params, "timesteps", 1000)
+        self.diffusion = create_diffusion(mode=diffusion_mode, timesteps=timesteps)
         self.evaluator = Evaluator(params, self.data_loader['val'], self.diffusion)
 
     def train(self):
-        ema = deepcopy(self.model).to(self.device)  # Create an EMA of the model for use after training
+        ema = deepcopy(self.model).to(self.device)
         requires_grad(ema, False)
 
-        update_ema(ema, self.model, decay=0)  # Ensure EMA is initialized with synced weights
-        self.model.train()  # important! This enables embedding dropout for classifier-free guidance
-        ema.eval()  # EMA model should always be in eval mode
+        update_ema(ema, self.model, decay=0)
+        self.model.train()
+        ema.eval()
 
         os.makedirs(self.params.model_dir, exist_ok=True)
         print(f"Training for {self.params.epochs} epochs...")
-        best_avg_loss = 1000000
+        best_avg_loss = float("inf")
         best_epoch = 0
-        
+        best_model_path = os.path.join(self.params.model_dir, "best_model.pth")
+        grad_clip = getattr(self.params, "grad_clip", 1.0)
+
         for epoch in range(self.params.epochs):
             print(f"Beginning epoch {epoch}...")
             start_time = timer()
             losses = []
+            self.model.train()
 
             for x, y in tqdm(self.data_loader['train'], mininterval=10):
                 self.optimizer.zero_grad()
-                x = x.to(self.device)
-                y = y.to(self.device)
-                t = torch.randint(0, self.diffusion.num_timesteps, (x.shape[0],), device=self.device)
-                
-                model_kwargs = dict(y=y)
-                loss_dict = self.diffusion.training_losses(self.model, x, t, model_kwargs)
-                loss = loss_dict["loss"].mean()
-                self.optimizer.zero_grad()
+                x = x.float().to(self.device)
+                y = y.long().to(self.device)
+
+                loss = self.diffusion.training_loss(self.model, x, y)
                 loss.backward()
+
+                if grad_clip > 0:
+                    torch.nn.utils.clip_grad_norm_(self.model.parameters(), grad_clip)
+
                 self.optimizer.step()
                 update_ema(ema, self.model)
                 self.optimizer_scheduler.step()
 
-                losses.append(loss.data.cpu().numpy())
+                losses.append(loss.item())
 
             avg_training_loss = np.mean(losses)
             optim_state = self.optimizer.state_dict()
+
             with torch.no_grad():
-                avg_val_loss = self.evaluator.get_metrics(model=self.model)
+                avg_val_loss = self.evaluator.get_metrics(model=ema)
                 print(
-                    "Epoch {} : Training Loss: {:.5f}, Validation Loss: {:.5f}, LR: {:.5f}, Time elapsed {:.2f} mins".format(
+                    "Epoch {} : Training Loss: {:.5f}, Validation Loss: {:.5f}, LR: {:.6f}, Time elapsed {:.2f} mins".format(
                         epoch + 1,
                         avg_training_loss,
                         avg_val_loss,
@@ -108,13 +115,14 @@ class Trainer(object):
                     best_epoch = epoch + 1
                     best_avg_loss = avg_val_loss
                     model_path = os.path.join(self.params.model_dir, f"epoch{epoch + 1}_avgloss_{avg_val_loss:.5f}.pth")
-                    torch.save(self.model.state_dict(), model_path)
-                    print("model save in " + model_path)
+                    torch.save(ema.state_dict(), model_path)
+                    torch.save(ema.state_dict(), best_model_path)
+                    print("model saved in " + model_path)
 
             if epoch + 1 == self.params.epochs:
-                print("{} epoch get the best avgloss {:.5f}".format(best_epoch, best_avg_loss))
-                print("the model is save in " + model_path)
-        
+                print("{} epoch got the best avgloss {:.5f}".format(best_epoch, best_avg_loss))
+                print("best model saved in " + best_model_path)
+
         return best_avg_loss
 
     def _load_latest_model(self):
