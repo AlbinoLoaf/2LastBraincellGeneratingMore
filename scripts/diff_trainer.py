@@ -33,20 +33,13 @@ class Trainer(object):
             f"cuda:{self.params.cuda}" if torch.cuda.is_available() else "cpu"
             )
         self.model = model.to(self.device)
-        self.diffusion = diffusion or create_diffusion(params.diffusion_mode, params.timesteps)
 
-        self.model = model.to(self.device)
         self.criterion = VLBLoss().to(self.device)
 
         if self.params.optimizer == 'AdamW':
             self.optimizer = torch.optim.AdamW(
                 self.model.parameters(), lr=self.params.lr, weight_decay=self.params.weight_decay
             )
-        else:
-            self.optimizer = torch.optim.SGD(
-                self.model.parameters(), lr=self.params.lr, momentum=0.9, weight_decay=self.params.weight_decay
-            )
-
         self.data_length = len(self.data_loader['train'])
         self.optimizer_scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
             self.optimizer, T_max=self.params.epochs * self.data_length, eta_min=1e-6
@@ -126,12 +119,17 @@ class Trainer(object):
         return best_avg_loss
 
     def _load_latest_model(self):
-        checkpoints = glob.glob(os.path.join(self.params.model_dir, "*.pth"))
-        if not checkpoints:
-            raise FileNotFoundError(f"No checkpoint files found in {self.params.model_dir}")
-        latest_ckpt = max(checkpoints, key=os.path.getmtime)
-        print(f"Loading latest weights: {latest_ckpt}")
-        self.model.load_state_dict(torch.load(latest_ckpt, map_location=self.device))
+        best_path = os.path.join(self.params.model_dir, "best_model.pth")
+        if os.path.exists(best_path):
+            ckpt_path = best_path
+        else:
+            checkpoints = glob.glob(os.path.join(self.params.model_dir, "*.pth"))
+            if not checkpoints:
+                raise FileNotFoundError(f"No checkpoint files found in {self.params.model_dir}")
+            ckpt_path = max(checkpoints, key=os.path.getmtime)
+
+        print(f"Loading weights from: {ckpt_path}")
+        self.model.load_state_dict(torch.load(ckpt_path, map_location=self.device))
         self.model.eval()
 
     def sample(self):
@@ -142,63 +140,52 @@ class Trainer(object):
             'Pz', 'P3', 'P4', 'P7', 'P8', 'PO3', 'PO4',
             'Oz', 'O1', 'O2', 'A2', 'A1'
         ]
-        diffusion = create_diffusion(timestep_respacing="")
-        self._load_latest_model()
+        self._load_best_model()
 
-        # Labels to condition the model with:
         class_labels = [1, 1, 1, 4, 4, 4]
-        n = len(class_labels)
-        z = torch.randn(n, 32, 2000, device=self.device)
-        y = torch.tensor(class_labels, device=self.device)
+        y = torch.tensor(class_labels, dtype=torch.long, device=self.device)
+        shape = (self.params.in_channels, self.params.time_points)
 
-        z = torch.cat([z, z], 0)
-        y_null = torch.tensor([self.params.num_of_classes] * n, device=self.device)
-        y = torch.cat([y, y_null], 0)
-        model_kwargs = dict(y=y, cfg_scale=self.params.cfg_scale)
+        samples = self.diffusion.sample_with_cfg(
+            model=self.model,
+            labels=y,
+            num_classes=self.params.num_of_classes,
+            shape=shape,
+            cfg_scale=self.params.cfg_scale,
+        )
 
-        samples = diffusion.p_sample_loop(
-            self.model.forward_with_cfg, z.shape, z, clip_denoised=False, model_kwargs=model_kwargs, progress=True,
-            device=self.device,
-        ).to(self.device)
-        
-        samples, _ = samples.chunk(2, dim=0)
         for sample in samples:
-            sample = sample.cpu().numpy() * 100
-            draw(sample, CHANNEL_LIST)
+            draw(sample.cpu().numpy(), CHANNEL_LIST)
 
     def synthetic_data(self):
-        diffusion = create_diffusion(timestep_respacing="")
         self._load_latest_model()
 
         os.makedirs(self.params.synthetic_data_dir, exist_ok=True)
         db = lmdb.open(self.params.synthetic_data_dir, map_size=66125001720)
         test_n = 0
         keys = []
-        
-        for epoch in range(self.params.synthetic_ratio):
-            print(f'Epoch:{epoch}')
-            for x, y in self.data_loader['train']:
-                y = y.to(self.device)
-                n = y.shape[0]
-                z = torch.randn(n, 32, 2000, device=self.device)
 
-                z = torch.cat([z, z], 0)
-                y_null = torch.tensor([self.params.num_of_classes] * n, device=self.device)
-                y_with_null = torch.cat([y, y_null], 0)
-                model_kwargs = dict(y=y_with_null, cfg_scale=self.params.cfg_scale)
+        shape = (self.params.in_channels, self.params.time_points)
+        synthetic_ratio = getattr(self.params, "synthetic_ratio", 1)
 
-                samples = diffusion.p_sample_loop(
-                    self.model.forward_with_cfg, z.shape, z, clip_denoised=False, model_kwargs=model_kwargs,
-                    progress=True,
-                    device=self.device,
-                ).to(self.device)
-                
-                samples, _ = samples.chunk(2, dim=0)
+        for epoch in range(synthetic_ratio):
+            print(f'Generating synthetic pass {epoch + 1}/{synthetic_ratio}...')
+            for _, y in tqdm(self.data_loader['train'], mininterval=10):
+                y = y.long().to(self.device)
+
+                samples = self.diffusion.sample_with_cfg(
+                    model=self.model,
+                    labels=y,
+                    num_classes=self.params.num_of_classes,
+                    shape=shape,
+                    cfg_scale=self.params.cfg_scale,
+                )
+
                 for sample, label in zip(samples, y):
-                    sample = sample.contiguous().view(32, 10, 200).cpu().numpy() * 100
-                    label = label.cpu().numpy()
-                    data_dict = {'sample': sample, 'label': label}
-                    
+                    sample_arr = sample.contiguous().view(32, 10, 200).cpu().numpy()
+                    label_arr = label.cpu().numpy()
+                    data_dict = {'sample': sample_arr, 'label': label_arr}
+
                     txn = db.begin(write=True)
                     txn.put(key=str(test_n).encode(), value=pickle.dumps(data_dict))
                     txn.commit()
@@ -209,8 +196,7 @@ class Trainer(object):
         txn.put(key='__keys__'.encode(), value=pickle.dumps(keys))
         txn.commit()
         db.close()
-        print('End!')
-
+        print(f'Saved {test_n} synthetic samples to {self.params.synthetic_data_dir}')
 
 @torch.no_grad()
 def update_ema(ema_model, model, decay=0.9999):

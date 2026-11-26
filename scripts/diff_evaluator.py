@@ -3,14 +3,13 @@ import glob
 import os
 import numpy as np
 import torch
-import torch.nn as nn
-from torch.utils.data import DataLoader
 from tqdm import tqdm
 import yaml
 
 from dataset.datasets import LoadDataset
 from diffusion import create_diffusion
-from models.eegdiffuser import EEGDiffuser
+from models.eegdiffuser import EEGDiffuser as CodeEEGDiffuser
+from models.paper_eegdiffuser import EEGDiffuser as PaperEEGDiffuser
 
 
 class ConfigArgs:
@@ -38,30 +37,18 @@ class Evaluator:
             x = x.to(self.device)
             y = y.to(self.device)
 
-            gen = torch.Generator(device=self.device)
-            gen.manual_seed(i)
-            t = torch.randint(
-                0,
-                self.diffusion.num_timesteps,
-                (x.shape[0],),
-                generator=gen,
-                device=self.device,
-            )
-            model_kwargs = dict(y=y)
-            loss_dict = self.diffusion.training_losses(model, x, t, model_kwargs)
-            loss = loss_dict["loss"].mean()
+            loss = self.diffusion.training_loss(model, x, y)
 
             losses.append(loss.data.cpu().numpy())
 
         avg_val_loss = float(np.mean(losses))
         return avg_val_loss
 
-
+    
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Evaluate EEGDiffuser")
-    parser.add_argument(
-        "--config", type=str, default="config.yml", help="Path to config file"
-    )
+    
+    parser.add_argument("--config", type=str, default="config.yml", help="Path to config file")
     cmd_args = parser.parse_args()
 
     with open(cmd_args.config, "r") as f:
@@ -75,23 +62,40 @@ if __name__ == "__main__":
     load_dataset = LoadDataset(params)
     data_loader = load_dataset.get_data_loader()
 
-    diffusion = create_diffusion(timestep_respacing="")
+    
+    diffusion_mode = getattr(params, "diffusion_mode", "vp_ddpm")
+    timesteps = getattr(params, "timesteps", 1000)
+    arch_mode = getattr(params, "arch_mode", "paper")
+    learn_sigma = diffusion_mode == "vp_ddpm"
+
+    diffusion = create_diffusion(mode=diffusion_mode, timesteps=timesteps)
     evaluator = Evaluator(
         params=params, data_loader=data_loader["val"], diffusion=diffusion
     )
 
-    model = EEGDiffuser(num_classes=params.num_of_classes).to(evaluator.device)
 
-    checkpoints = glob.glob(os.path.join(params.model_dir, "*.pth"))
-    if checkpoints:
-        latest_checkpoint = max(checkpoints, key=os.path.getmtime)
-        print(f"Loading checkpoint: {latest_checkpoint}")
-        model.load_state_dict(
-            torch.load(latest_checkpoint, map_location=evaluator.device)
-        )
+    ModelClass = PaperEEGDiffuser if arch_mode == "paper" else CodeEEGDiffuser
+    model = ModelClass(
+        in_channels=params.in_channels,
+        time_points=params.time_points,
+        num_classes=params.num_of_classes,
+        learn_sigma=learn_sigma,
+    ).to(evaluator.device)
+
+
+    best_ckpt = os.path.join(params.model_dir, "best_model.pth")
+    if os.path.exists(best_ckpt):
+        ckpt_path = best_ckpt
+    else:
+        checkpoints = glob.glob(os.path.join(params.model_dir, "*.pth"))
+        ckpt_path = max(checkpoints, key=os.path.getmtime) if checkpoints else None
+
+    if ckpt_path:
+        print(f"Loading checkpoint: {ckpt_path}")
+        model.load_state_dict(torch.load(ckpt_path, map_location=evaluator.device))
     else:
         print("No checkpoint found in model_dir. Evaluating with initial weights.")
 
     with torch.no_grad():
         val_loss = evaluator.get_metrics(model)
-        print(f"Validation Loss: {val_loss:.5f}")
+        print(f"Validation Loss ({arch_mode.upper()} | {diffusion_mode.upper()}): {val_loss:.5f}")

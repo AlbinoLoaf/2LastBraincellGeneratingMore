@@ -6,6 +6,7 @@ datasets.zip
 /datasets
 /models_weights
 /evaluation_results/*/*/*.png
+upload.txt
 # C extensions
 *.so
 
